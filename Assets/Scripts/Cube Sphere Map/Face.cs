@@ -79,22 +79,26 @@ namespace CubeSphere {
 		public int GetCellWorldIndex(Vector2Int coords) {
 			if(coords.x < 0) {
 				coords.x += sideLength;
-				return edges[(int) Direction.Left].GetNeighbor(EdgeCrossDirection.Right).GetCellWorldIndex(coords);
+				return GetCoodinatesFromNeighbor(Direction.Left, coords);
 			}
 			if(coords.x >= sideLength) {
 				coords.x -= sideLength;
-				return edges[(int) Direction.Right].GetNeighbor(EdgeCrossDirection.Left).GetCellWorldIndex(coords);
+				return GetCoodinatesFromNeighbor(Direction.Right, coords);
 			}
 			if(coords.y < 0) {
 				coords.y += sideLength;
-				return edges[(int) Direction.Down].GetNeighbor(EdgeCrossDirection.Left).GetCellWorldIndex(coords);
+				return GetCoodinatesFromNeighbor(Direction.Down, coords);
 			}
 			if(coords.y >= sideLength) {
 				coords.y -= sideLength;
-				return edges[(int) Direction.Up].GetNeighbor(EdgeCrossDirection.Right).GetCellWorldIndex(coords);
+				return GetCoodinatesFromNeighbor(Direction.Up, coords);
 			}
 			
 			return index * sideLength * sideLength + CoordsToIndex(coords);
+		}
+
+		int GetCoodinatesFromNeighbor(Direction direction, Vector2Int coords) {
+			return edges[(int) direction].GetCellWorldIndex(coords);
 		}
 
 		public Cell GetCell(Vector2Int coords) {
@@ -127,6 +131,14 @@ namespace CubeSphere {
 
 		public int IndexOffset() {
 			return index * sideLength * sideLength;
+		}
+
+		public void AnnounceNeighbors() {
+			Debug.Log("North: " + edges[0].neighbor.index);
+			Debug.Log("East: " + edges[1].neighbor.index);
+			Debug.Log("South: " + edges[2].neighbor.index);
+			Debug.Log("West: " + edges[3].neighbor.index);
+				
 		}
 	}
 }

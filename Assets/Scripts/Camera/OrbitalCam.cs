@@ -14,7 +14,7 @@ public class OrbitalCam : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		transform.localPosition = new Vector3 (0, 0, radius);
+		//transform.localPosition = new Vector3 (0, 0, radius);
 		cam.transform.localPosition = new Vector3 (0, 0, -radius * zoom);
 	}
 	
@@ -46,6 +46,6 @@ public class OrbitalCam : MonoBehaviour {
 		yaw -= xDelta * speed * (Mathf.Cos (pitch * Mathf.PI / 180) / 2 + 0.5f);
 
 		transform.eulerAngles = new Vector3 (pitch, yaw, 0f);
-		transform.position = transform.rotation * Vector3.forward * radius;
+		//transform.position = transform.rotation * Vector3.forward * radius;
 	}
 }

@@ -18,6 +18,10 @@ namespace CubeSphere {
             return (Direction) (((int) direction + nineties) % 4);
         }
 
+        public static Direction Difference(Direction d1, Direction d2) {
+            return (Direction) (((int) d2 - (int) d1 + 4) % 4);
+        }
+
         public static Direction Random() {
             return (Direction) UnityEngine.Random.Range(0, 4);
         }

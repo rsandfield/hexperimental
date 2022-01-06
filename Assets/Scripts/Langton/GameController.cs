@@ -7,6 +7,7 @@ namespace LangtonAnt {
     public class GameController : MonoBehaviour
     {
         public CubeSphere.CubeSphere world;
+        public OrbitalCam cam;
         public Ant antPrefab;
         Ant ant;
 
@@ -33,6 +34,10 @@ namespace LangtonAnt {
 
         void Step() {
             ant.StepForward();
+            Vector3 position = ant.transform.position;
+            float x = Mathf.Asin(position.y) * Mathf.Rad2Deg;
+            float y = Mathf.Asin(position.x) * Mathf.Rad2Deg;
+            cam.transform.eulerAngles = new Vector3(x, -y, 0);
         }
 
         public void CycleCell(int worldIndex) {

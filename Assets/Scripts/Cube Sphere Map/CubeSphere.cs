@@ -16,7 +16,6 @@ namespace CubeSphere {
 		void Awake () {
 			GenerateFacesAndCells();
 			GenerateEdges();
-			TestEdges();
 		}
 
 		private void GenerateFacesAndCells() {
@@ -40,34 +39,60 @@ namespace CubeSphere {
 		}
 
 		private void GenerateEdges() {
-			edges = new Edge[12];
-			for(int i = 0; i < 4; i++) {
-				edges[i] = new Edge(faces[(i + 1) % 4], faces[i], Direction.Up, Direction.Up);	// Equator
-				edges[i + 4] = new Edge(faces[i], faces[4], (Direction) ((i + 2) % 4), Direction.Up);		// South
-				edges[i + 8] = new Edge(faces[5], faces[i], Direction.Up, Direction.Up);//(Direction) i);		// North
-			}
+			edges = new Edge[24];
 
 			for(int i = 0; i < 4; i++) {
-				faces[i].AssignEdges(edges[i + 8], edges[(i + 3) % 4], edges[i + 4], edges[i]);
+				int flip = (i % 2) * 2;
+				faces[i].AssignEdges(
+					new Edge(faces[5], (Direction) ((i + flip) % 4)),
+					new Edge(faces[(i + 3) % 4], Direction.Up),
+					new Edge(faces[4], (Direction) ((4 - i + flip) % 4)),
+					new Edge(faces[(i + 1) % 4], Direction.Up)
+				);
 			}
-			faces[4].AssignEdges(edges[4], edges[5], edges[6], edges[7]);
-			faces[5].AssignEdges(edges[8], edges[9], edges[10], edges[11]);
+
+			faces[4].AssignEdges(
+				new Edge(faces[0], Direction.Up),
+				new Edge(faces[3], Direction.Right),
+				new Edge(faces[2], Direction.Down),
+				new Edge(faces[1], Direction.Left)
+			);
+			
+			faces[5].AssignEdges(
+				new Edge(faces[2], Direction.Down),
+				new Edge(faces[3], Direction.Left),
+				new Edge(faces[0], Direction.Up),
+				new Edge(faces[1], Direction.Right)
+			);
 		}
 
-		private void TestEdges() {
-			Color[] colors = new Color[] { Color.blue, Color.red, Color.green, Color.cyan, Color.black };
-			// for(int i = 0; i < 4; i++) {
-				int i = 4;
-				for(int p = -1; p <= resolution; p++) {
-					Cell cell = cells[faces[i].GetCellWorldIndex(new Vector2Int(0, p))];
-					cell.face.SetCellColor(cell.FaceCoordinates(), colors[i]);
-					Debug.Log(cell);
+		private void ExplodeSouth() {
+			foreach(Face face in faces) {
+				face.transform.localRotation = Quaternion.Euler(Vector3.zero);
+				face.SetCellColor(new Vector2Int(0, 0), Color.blue);
+			}
+			faces[0].transform.position = Vector3.up * 1.5f;
+			faces[1].transform.position = Vector3.right * 1.5f;
+			faces[2].transform.position = Vector3.down * 1.5f;
+			faces[3].transform.position = Vector3.left * 1.5f;
+			faces[5].transform.position = Vector3.left * 3f;
 
-					cell = cells[faces[i].GetCellWorldIndex(new Vector2Int(p, 1))];
-					cell.face.SetCellColor(cell.FaceCoordinates(), colors[i]);
-					Debug.Log(cell);
-				}
-			// }
+			faces[1].transform.Rotate(0, 90, 0);
+			faces[2].transform.Rotate(0, 180, 0);
+			faces[3].transform.Rotate(0, 270, 0);
+		}
+
+		private void TestEdges(int i, Color color) {
+			Face face = faces[i];
+			face.AnnounceNeighbors();
+
+			for(int p = -1; p <= resolution; p++) {
+				Cell cell = cells[face.GetCellWorldIndex(new Vector2Int(0, p))];
+				cell.face.SetCellColor(cell.FaceCoordinates(), color);
+
+				cell = cells[face.GetCellWorldIndex(new Vector2Int(p, 1))];
+				cell.face.SetCellColor(cell.FaceCoordinates(), color);
+			}
 		}
 
 		public Cell GetCell(Face face, Vector2Int coords) {
